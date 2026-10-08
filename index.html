@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create New Notification - Concept rework</title>
+  <style>
+    :root { color-scheme: dark; --bg:#261f18; --field:#4b3e30; --text:#e8e5e2; --muted:#a68a65; --line:#776653; --lime:#b6ff39; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:1.4; }
+    main { max-width:980px; margin:0 auto; padding:20px 28px 24px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    h1 { margin:0; font-size:28px; line-height:1.2; font-weight:400; }
+    .badge { padding:4px 10px; border:1px solid var(--muted); font-size:12px; color:#dac9b2; }
+    h2 { margin:0 0 18px; font-size:22px; font-weight:400; }
+    .field { margin-bottom:16px; }
+    label,.label { display:block; margin-bottom:6px; font-weight:700; }
+    input[type=text],textarea,.select { width:100%; min-height:34px; padding:8px 12px; border:0; border-radius:0; background:var(--field); color:var(--text); font:inherit; }
+    input:focus,textarea:focus { outline:1px solid var(--muted); outline-offset:2px; }
+    textarea { display:block; min-height:96px; resize:vertical; line-height:1.6; }
+    .select { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .chevron { flex:none; width:7px; height:7px; border-right:2px solid #d6cdc1; border-bottom:2px solid #d6cdc1; transform:rotate(45deg); margin:0 3px 4px 0; }
+    .help { margin:5px 0 0; color:var(--muted); font-size:12px; }
+    .help a { color:var(--text); text-decoration:underline; }
+    .pair { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+    section { border-top:1px solid #c5bfb6; padding-top:16px; margin-top:22px; }
+    .logic { margin:20px 0 14px; }
+    .logic strong { display:block; }
+    .filter { display:flex; align-items:center; gap:10px; }
+    .filter > :first-child { flex:1; min-width:0; }
+    button { color:var(--text); background:transparent; border:1px solid var(--line); border-radius:0; padding:8px 12px; font:inherit; cursor:default; }
+    button:focus-visible { outline:2px solid var(--lime); outline-offset:3px; }
+    .remove { border:0; padding:2px; width:20px; font-size:19px; line-height:1; }
+    .small-count { margin-left:12px; color:#d5ccc1; font-size:11px; font-weight:400; }
+    .game { border:1px solid var(--line); padding:3px; }
+    .game + .game { margin-top:7px; }
+    .game-top { background:var(--field); display:flex; align-items:center; gap:9px; padding:5px 9px; min-height:40px; }
+    .game-name { flex:1; }
+    .game-info { padding:4px 8px; border:0; background:#87735b; }
+    .game-file { background:var(--field); margin-top:4px; padding:5px 12px; font-size:12px; }
+    .game-row { margin-bottom:7px; }
+    .game-icon { height:27px; width:27px; flex:none; object-fit:contain; }
+    .add-filter { display:flex; align-items:center; gap:14px; margin:3px 0 14px; }
+    .add-filter .help { margin:0; }
+    .audience { background:var(--field); padding:15px 18px; margin:0 30px 17px 0; }
+    .audience h3 { font-size:14px; margin:0 0 7px; }
+    .audience p { margin:0 0 5px; }
+    .audience .count { font-size:20px; font-weight:700; }
+    .audience .help { margin-bottom:0; }
+    .delivery-row { display:grid; grid-template-columns:125px 1fr; align-items:center; margin-bottom:13px; gap:8px; }
+    .delivery-row > label,.delivery-row > .label { margin:0; }
+    .radio-group { display:flex; align-items:center; gap:28px; min-height:30px; }
+    .choice { display:flex; align-items:center; gap:8px; margin:0; font-weight:400; }
+    .radio { width:17px; height:17px; border:1px solid #d5cfc7; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; }
+    .radio.selected { background:#a36af9; border-color:#a36af9; }
+    .radio.selected::after { content:""; width:7px; height:7px; background:white; border-radius:50%; }
+    .date { display:flex; align-items:center; background:var(--field); padding-right:12px; }
+    .date input { flex:1; min-width:0; }
+    .calendar { width:15px; height:15px; color:#ded8cf; }
+    .check-line { display:flex; align-items:center; gap:9px; margin:18px 0 12px; }
+    .check-line .label { margin:0; }
+    .checkbox { width:16px; height:16px; border:1px solid #c2b9ad; display:inline-flex; align-items:center; justify-content:center; font-size:13px; line-height:1; }
+    .checkbox.checked { background:#a36af9; border-color:#a36af9; color:white; }
+    .approval { margin-top:18px; }
+    .approval .check-line { margin-bottom:4px; }
+    .approval .help { margin-left:25px; }
+    .lifecycle { margin-top:24px; }
+    footer { border-top:1px solid #c5bfb6; margin-top:24px; padding-top:12px; }
+    .actions { display:flex; flex-wrap:wrap; gap:7px; }
+    .actions button { min-height:37px; padding:8px 16px; }
+    .actions .primary { background:var(--lime); border-color:var(--lime); color:#161e0a; font-weight:700; }
+    footer .help { margin-top:9px; }
+    @media(min-width:1250px) { main { margin-left:max(20px,calc((100vw - 1100px)/2)); } }
+    @media(max-width:600px) { main { padding:18px 14px; } h1 { font-size:24px; } .pair { grid-template-columns:1fr; gap:0; } .delivery-row { grid-template-columns:1fr; gap:6px; } .audience { margin-right:30px; } .add-filter { align-items:flex-start; flex-direction:column; gap:6px; } .game-info { font-size:11px; } }
+    @media print { body { print-color-adjust:exact; -webkit-print-color-adjust:exact; } main { margin:0 auto; } }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="grass-block" viewBox="0 0 32 32"><path fill="#72994f" d="M16 2 30 9 16 16 2 9Z"/><path fill="#527d37" d="m2 9 14 7v15L2 23Z"/><path fill="#3f642d" d="m16 16 14-7v14l-14 8Z"/><path fill="#886342" d="m2 14 4 2v3l3-1 3 3 4-1v11L2 23Z"/><path fill="#6b4d34" d="m16 20 4-2 2 2 4-4 4-2v9l-14 8Z"/><path fill="#a27b50" d="m4 20 3 1v3l-3-1Zm7 3 3 1v3l-3-1Z"/><path fill="#825d39" d="m20 23 3-2v3l-3 2Zm5-5 3-1v3l-3 1Z"/><path fill="#89af61" d="m10 7 5-3 5 3-5 2Zm7 4 5-3 4 2-5 3Z"/></symbol>
+    <symbol id="paper-icon" viewBox="0 0 32 32"><path fill="#deded7" stroke="#a6a7a1" d="m11 3 16 8-7 19L4 22Z"/><path stroke="#9fa3a0" d="m12 8 10 5m-11-1 10 5m-12-1 10 5m-12-1 10 5"/></symbol>
+    <symbol id="calendar-icon" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 2v5m8-5v5M3 8h14m-11 3h2m2 0h2m2 0h1m-9 3h2m2 0h2" stroke="currentColor" stroke-width="1.5"/></symbol>
+  </svg>
+  <main>
+    <header><h1>Create New Notification</h1><span class="badge">Draft</span></header>
+    <div class="field"><span class="label" id="template-label">Template</span><div class="select" aria-labelledby="template-label">Scheduled maintenance<span class="chevron"></span></div></div>
+    <div class="field"><label for="title">Title *</label><input id="title" type="text" value="Scheduled Minecraft maintenance"></div>
+    <div class="field"><label for="icon">Icon *</label><input id="icon" type="text" value="fa-circle-exclamation"><p class="help">Font Awesome icon class (e.g., fa-circle-exclamation, fa-warning, fa-info-circle). Find more icons <a>here</a></p></div>
+    <div class="pair">
+      <div class="field"><span class="label" id="style-label">Style</span><div class="select" aria-labelledby="style-label">Info<span class="chevron"></span></div><p class="help">Determines the banner color/styling</p></div>
+      <div class="field"><span class="label" id="display-label">Display Type *</span><div class="select" aria-labelledby="display-label">Both (Banner &amp; Tray)<span class="chevron"></span></div><p class="help">Where should this notification appear? Banners show at the top of pages, tray notifications appear in the notification bell dropdown.</p></div>
+    </div>
+    <div class="field"><label for="message">Message *</label><textarea id="message">Scheduled maintenance will affect the selected Minecraft servers on 15 October, 02:00–03:00 UTC.
+Please save your progress before maintenance begins.
+We will update this notice when service is restored.</textarea><p class="help">The message content (can contain HTML).</p></div>
+    <section aria-labelledby="target-heading">
+      <h2 id="target-heading">Audience &amp; Targeting</h2>
+      <div class="field"><span class="label" id="scope-label">Scope</span><div class="select" aria-labelledby="scope-label">Advanced targeting<span class="chevron"></span></div><p class="help">Other scopes: Global, Node, Location, Server, User.</p></div>
+      <div class="logic"><strong>Match ALL filters (AND)</strong><p class="help">Multiple values within one filter match ANY (OR).</p></div>
+      <div class="field"><span class="label" id="category-label">Game Category</span><div class="filter"><div class="select" aria-labelledby="category-label">Minecraft: Java Edition<span class="chevron"></span></div><button class="remove" type="button" aria-label="Remove Game Category">×</button></div></div>
+      <div class="field">
+        <span class="label">Game File <span class="small-count">2 selected</span></span>
+        <div class="filter game-row"><div class="game"><div class="game-top"><img class="game-icon" src="https://cdn.apexminecrafthosting.com/server-pics/minecraft_26.png" alt="Minecraft"><span class="game-name">Minecraft 26.2</span><button class="game-info" type="button">Info ↗</button><span class="chevron"></span></div><div class="game-file">minecraft_26.2.jar</div></div><button class="remove" type="button" aria-label="Remove Minecraft Game File">×</button></div>
+        <div class="filter game-row"><div class="game"><div class="game-top"><img class="game-icon" src="https://cdn.apexminecrafthosting.com/server-pics/paper_26.png" alt="Paper"><span class="game-name">Paper 26.2</span><button class="game-info" type="button">Info ↗</button><span class="chevron"></span></div><div class="game-file">paper_26.2.jar</div></div><button class="remove" type="button" aria-label="Remove Paper Game File">×</button></div>
+        <button type="button">+ Select another Game File</button>
+      </div>
+      <div class="field"><span class="label" id="location-label">Location</span><div class="filter"><div class="select" aria-labelledby="location-label">Miami<span class="chevron"></span></div><button class="remove" type="button" aria-label="Remove Location">×</button></div></div>
+      <div class="add-filter"><button type="button">+ Add filter</button><p class="help">Location, Node, Server, User or Server Type</p></div>
+      <div class="audience"><h3>Audience Preview</h3><p>Minecraft: Java Edition AND (Minecraft 26.2 OR Paper 26.2) AND Miami</p><p class="count">248 servers · 173 users</p><p class="help">Illustrative estimate · recalculated before confirmation.</p></div>
+      <div class="field"><span class="label" id="dismiss-label">Dismissable</span><div class="select" aria-labelledby="dismiss-label">Yes<span class="chevron"></span></div></div>
+    </section>
+    <section aria-labelledby="delivery-heading">
+      <h2 id="delivery-heading">Delivery &amp; Expiration</h2>
+      <div class="delivery-row"><span class="label">Publish</span><div class="radio-group"><span class="choice"><span class="radio" aria-hidden="true"></span>Now</span><span class="choice"><span class="radio selected" aria-hidden="true"></span>Schedule</span></div></div>
+      <div class="delivery-row"><label for="starts">Starts At *</label><div class="date"><input id="starts" type="text" value="15 Oct 2026 01:00"><svg class="calendar" aria-hidden="true"><use href="#calendar-icon"/></svg></div></div>
+      <div class="delivery-row"><span class="label" id="timezone-label">Timezone</span><div><div class="select" aria-labelledby="timezone-label">UTC<span class="chevron"></span></div><p class="help">Start and expiration use this timezone.</p></div></div>
+      <div class="check-line"><span class="checkbox checked" aria-hidden="true">✓</span><span class="label">Expires?</span></div>
+      <div class="delivery-row"><label for="expires">Expires At *</label><div><div class="date"><input id="expires" type="text" value="15 Oct 2026 04:00"><svg class="calendar" aria-hidden="true"><use href="#calendar-icon"/></svg></div><p class="help">Expiration is required for temporary notifications.</p></div></div>
+      <div class="approval"><div class="check-line"><span class="checkbox" aria-hidden="true"></span><span>Require approval before publishing</span></div><p class="help">Scheduled notifications can be edited or cancelled before they go live.</p></div>
+      <p class="help lifecycle">Lifecycle: Draft → Scheduled → Active → Expired</p>
+    </section>
+    <footer><div class="actions"><button class="primary" type="button">Review &amp; Schedule</button><button type="button">Save Draft</button><button type="button">Cancel</button></div><p class="help">Changes and publishing actions are recorded in the audit log.</p></footer>
+  </main>
+</body>
+</html>
